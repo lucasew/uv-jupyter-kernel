@@ -4,12 +4,17 @@ import argparse
 import json
 import shutil
 from pathlib import Path
+import sys
 
 
 UV = shutil.which('uv')
 assert UV is not None, "uv not found in PATH"
 UV_DIR = str(Path(UV).parent)
 
+def get_kernel_dir():
+    if sys.platform == 'darwin':
+        return Path.home() / "Library" / "Jupyter" / "kernels"
+    return Path.home() / ".local" / "share" / "jupyter" / "kernels"
 
 def main():
     parser = argparse.ArgumentParser(description="Setup Jupyter kernels for uv")
@@ -22,7 +27,7 @@ def main():
     
     args = parser.parse_args()
     
-    kernel_base = Path.home() / ".local" / "share" / "jupyter" / "kernels"
+    kernel_base = get_kernel_dir()
     
     for version in args.versions:
         kernel_file = kernel_base / f"uv-{version}" / "kernel.json"
