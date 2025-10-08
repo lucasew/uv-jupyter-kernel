@@ -25,13 +25,18 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install the latest version of uv
-      uses: astral-sh/setup-uv@v6
+    - name: Install tools
+      uses: jdx/mise-action@v2
 
     - name: Setup git config
       run: |
         git config user.name actions-bot
         git config user.email actions-bot@users.noreply.github.com
+
+    - name: Check
+      run: ruff check --fix
+    - name: Format
+      run: ruff format
 
     - name: Build wheel
       run: uv build
