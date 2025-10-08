@@ -2,10 +2,6 @@
 
 set -eu -o pipefail
 
-echo release liberada
-# exit 0
-
-
 if [ $# == 1 ]; then
 	VERSION="$1"; shift
 else
@@ -13,9 +9,26 @@ else
 	exit 1
 fi
 
-printf "%s" "$VERSION" > VERSION
+CURRENT_VERSION=($(cat ./VERSION | sed 's;\.; ;g'))
+
+case "$VERSION" in
+	patch)
+		VERSION="${CURRENT_VERSION[0]}.${CURRENT_VERSION[1]}.$((${CURRENT_VERSION[2]}+1))"
+	;;
+	minor)
+		VERSION="${CURRENT_VERSION[0]}.$((${CURRENT_VERSION[1]}+1)).0"
+	;;
+	major)
+		VERSION="$((${CURRENT_VERSION[0]}+1)).0.0"
+	;;
+esac
+
+printf "%s" "$VERSION" > ./VERSION
 
 git add -A
 git commit -sm "bump to $VERSION"
-git tag "$VERSION"
-git push --tags
+if [[ ! -v NO_TAG ]]; then
+	git tag "$VERSION"
+	git push --tag
+fi
+git push
