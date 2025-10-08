@@ -38,9 +38,6 @@ jobs:
     - name: Format
       run: ruff format
 
-    - name: Build wheel
-      run: uv build
-
     - name: Make release if everything looks right
       env:
         NEW_VERSION: ${{ github.event.inputs.new_version }}
@@ -50,6 +47,9 @@ jobs:
           echo "New version: $(cat ./VERSION)" >> $GITHUB_STEP_SUMMARY
           echo "RELEASE_VERSION=$(cat ./VERSION)" >> $GITHUB_ENV
         fi
+
+    - name: Build wheel
+      run: uv build
 
     - name: Create release
       if: env.RELEASE_VERSION != ''
