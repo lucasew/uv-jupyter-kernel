@@ -6,6 +6,9 @@ on:
     - main
     tags:
     - '*'
+  pull_request:
+    branches:
+    - main
   workflow_dispatch:
     inputs:
       new_version:
@@ -39,10 +42,11 @@ jobs:
       run: ruff format
 
     - name: Make release if everything looks right
+      if: github.event_name != 'pull_request'
       env:
         NEW_VERSION: ${{ github.event.inputs.new_version }}
       run: |
-        if [[ ! -z "$NEW_VERSION" ]]; then
+        if [[ ! -z "$NEW_VERSION" ]] && [[ "$IS_PR" != "true" ]]; then
           NO_TAG=1 ./make_release "$NEW_VERSION"
           echo "New version: $(cat ./VERSION)" >> $GITHUB_STEP_SUMMARY
           echo "RELEASE_VERSION=$(cat ./VERSION)" >> $GITHUB_ENV
@@ -52,7 +56,7 @@ jobs:
       run: uv build
 
     - name: Create release
-      if: env.RELEASE_VERSION != ''
+      if: env.RELEASE_VERSION != '' && github.event_name != 'pull_request'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ env.RELEASE_VERSION }}
@@ -63,7 +67,7 @@ jobs:
           --generate-notes
 
     - name: Build and publish to PyPI
-      if: env.RELEASE_VERSION != ''
+      if: env.RELEASE_VERSION != '' && github.event_name != 'pull_request'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
