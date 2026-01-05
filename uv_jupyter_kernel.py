@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 import shutil
 from pathlib import Path
 import sys
@@ -32,6 +33,9 @@ def main():
     kernel_base = get_kernel_dir()
 
     for version in args.versions:
+        if not re.match(r"^[a-zA-Z0-9.]+$", version):
+            print(f"Skipping invalid version string: {version}", file=sys.stderr)
+            continue
         kernel_file = kernel_base / f"uv-{version}" / "kernel.json"
 
         kernel_file.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,4 @@
+## 2024-07-25 - Path Traversal in Kernel Creation
+**Vulnerability:** User-supplied version strings from the `--versions` argument were used directly to construct file paths for `kernel.json` without any sanitization. This allowed for a path traversal attack, where a malicious user could provide input like `../../foo` to write a file outside the intended Jupyter kernels directory.
+**Learning:** The script implicitly trusted command-line input when performing file system operations. Any user-controllable input that is used to construct a path, command, or query is a potential injection vector.
+**Prevention:** All user-provided input, especially when used for file paths or shell commands, must be strictly validated against an allowlist of safe characters or patterns. For this fix, a regular expression (`^[a-zA-Z0-9.]+$`) was added to ensure the version string only contains characters expected in a version identifier, thus preventing directory traversal.
