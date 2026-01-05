@@ -12,13 +12,13 @@ assert UV is not None, "uv not found in PATH"
 UV_DIR = str(Path(UV).parent)
 
 
-def get_kernel_dir():
+def get_kernel_dir() -> Path:
     if sys.platform == "darwin":
         return Path.home() / "Library" / "Jupyter" / "kernels"
     return Path.home() / ".local" / "share" / "jupyter" / "kernels"
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Setup Jupyter kernels for uv")
     parser.add_argument(
         "--versions",
