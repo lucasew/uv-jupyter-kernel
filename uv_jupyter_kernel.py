@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import json
 import shutil
 from pathlib import Path
@@ -37,7 +38,7 @@ def main() -> None:
         kernel_file.parent.mkdir(parents=True, exist_ok=True)
 
         kernel_config = {
-            "env": {"PATH": "${PATH}:" + UV_DIR},
+            "env": {"PATH": os.pathsep.join(["${PATH}", UV_DIR])},
             "argv": [
                 UV,
                 "run",
