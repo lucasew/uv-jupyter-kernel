@@ -32,6 +32,10 @@ def main() -> None:
     kernel_base = get_kernel_dir()
 
     for version in args.versions:
+        if not all(c.isalnum() or c == "." for c in version):
+            print(f"Invalid version: {version!r}", file=sys.stderr)
+            continue
+
         kernel_file = kernel_base / f"uv-{version}" / "kernel.json"
 
         kernel_file.parent.mkdir(parents=True, exist_ok=True)
