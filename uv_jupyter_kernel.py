@@ -3,6 +3,7 @@
 import argparse
 import os
 import json
+import re
 import shutil
 from pathlib import Path
 import sys
@@ -19,12 +20,28 @@ def get_kernel_dir() -> Path:
     return Path.home() / ".local" / "share" / "jupyter" / "kernels"
 
 
+def validate_version(value: str) -> str:
+    """Validate the version string to prevent path traversal and other issues."""
+    # Allow alphanumeric, dots, and hyphens.
+    if not re.match(r"^[a-zA-Z0-9.-]+$", value):
+        raise argparse.ArgumentTypeError(
+            f"Invalid version string: '{value}'. "
+            "Must contain only alphanumeric characters, dots, and hyphens."
+        )
+    if ".." in value:
+        raise argparse.ArgumentTypeError(
+            f"Invalid version string: '{value}'. Cannot contain '..'."
+        )
+    return value
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Setup Jupyter kernels for uv")
     parser.add_argument(
         "--versions",
         nargs="+",
         default=["3.13", "3.12"],
+        type=validate_version,
         help="Python versions to configure (default: 3.13 3.12)",
     )
 
