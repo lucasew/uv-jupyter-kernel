@@ -3,6 +3,7 @@
 import argparse
 import os
 import json
+import re
 import shutil
 from pathlib import Path
 import sys
@@ -33,6 +34,13 @@ def main() -> None:
     kernel_base = get_kernel_dir()
 
     for version in args.versions:
+        if not re.match(r"^[a-zA-Z0-9._+-]+$", version):
+            print(
+                f"Error: Invalid characters in version '{version}'. Only alphanumeric, dots, underscores, plus signs, and dashes are allowed.",
+                file=sys.stderr,
+            )
+            continue
+
         kernel_file = kernel_base / f"uv-{version}" / "kernel.json"
 
         kernel_file.parent.mkdir(parents=True, exist_ok=True)
