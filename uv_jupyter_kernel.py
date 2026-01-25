@@ -3,10 +3,17 @@
 import argparse
 import os
 import json
+import re
 import shutil
 from pathlib import Path
 import sys
 from typing import Dict, Any
+
+
+def validate_version(version: str) -> str:
+    if not re.match(r"^[a-zA-Z0-9._+-]+$", version):
+        raise argparse.ArgumentTypeError(f"Invalid version: {version}")
+    return version
 
 
 def get_uv_path() -> str:
@@ -51,13 +58,29 @@ def create_kernel_config(uv_path: str, version: str) -> Dict[str, Any]:
     }
 
 
+DEFAULT_VERSIONS = ["3.13", "3.12"]
+
+
+def install_kernel(uv_path: str, version: str, kernel_base: Path) -> Path:
+    kernel_file = kernel_base / f"uv-{version}" / "kernel.json"
+    kernel_file.parent.mkdir(parents=True, exist_ok=True)
+
+    kernel_config = create_kernel_config(uv_path, version)
+
+    kernel_file.write_text(
+        json.dumps(kernel_config, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    return kernel_file
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Setup Jupyter kernels for uv")
     parser.add_argument(
         "--versions",
         nargs="+",
-        default=["3.13", "3.12"],
-        help="Python versions to configure (default: 3.13 3.12)",
+        default=DEFAULT_VERSIONS,
+        type=validate_version,
+        help=f"Python versions to configure (default: {' '.join(DEFAULT_VERSIONS)})",
     )
 
     args = parser.parse_args()
@@ -66,15 +89,7 @@ def main() -> None:
     kernel_base = get_kernel_dir()
 
     for version in args.versions:
-        kernel_file = kernel_base / f"uv-{version}" / "kernel.json"
-        kernel_file.parent.mkdir(parents=True, exist_ok=True)
-
-        kernel_config = create_kernel_config(uv_path, version)
-
-        kernel_file.write_text(
-            json.dumps(kernel_config, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
-
+        kernel_file = install_kernel(uv_path, version, kernel_base)
         print(f"Kernel configured for Python {version} at: {kernel_file}")
 
 
