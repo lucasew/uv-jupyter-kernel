@@ -13,6 +13,6 @@ jobs:
       - name: Install tools
         uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3
 
-      - name: Run script
+      - name: Run tests
         run: |
-          uv run uv-jupyter-kernel
+          mise run test
