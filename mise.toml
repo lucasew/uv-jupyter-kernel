@@ -1,3 +1,56 @@
 [tools]
 ruff = "0.14.0"
 uv = "0.8.17"
+
+[tasks."install:uv"]
+run = "uv sync"
+description = "Install dependencies with uv"
+
+[tasks.install]
+depends = ["install:*"]
+description = "Install all dependencies"
+
+[tasks."lint:ruff"]
+run = "ruff check ."
+description = "Run ruff linter"
+
+[tasks."lint:fmt"]
+run = "ruff format --check ."
+description = "Check formatting with ruff"
+
+[tasks.lint]
+depends = ["lint:*"]
+description = "Run all linters"
+
+[tasks."fmt:ruff"]
+run = "ruff format ."
+description = "Run ruff formatter"
+
+[tasks.fmt]
+depends = ["fmt:*"]
+description = "Run all formatters"
+
+[tasks."test:unittest"]
+run = "python3 -m unittest discover tests"
+description = "Run unit tests"
+
+[tasks.test]
+depends = ["test:*"]
+description = "Run all tests"
+
+[tasks."codegen:none"]
+run = "echo 'No codegen'"
+description = "No-op codegen"
+
+[tasks.codegen]
+depends = ["codegen:*"]
+description = "Run all codegen tasks"
+
+[tasks.ci]
+depends = ["lint", "test"]
+description = "Run CI checks"
+
+[tasks.release]
+depends = ["ci"]
+run = "./make_release $NEW_VERSION"
+description = "Bump version and create release tag"
