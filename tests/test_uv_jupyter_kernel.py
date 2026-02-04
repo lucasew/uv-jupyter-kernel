@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import sys
 from pathlib import Path
 import os
@@ -10,6 +10,7 @@ import json
 sys.path.append(os.getcwd())
 
 import uv_jupyter_kernel
+
 
 class TestUvJupyterKernel(unittest.TestCase):
     def test_create_kernel_config(self):
@@ -57,6 +58,7 @@ class TestUvJupyterKernel(unittest.TestCase):
         args, _ = mock_write.call_args
         content = json.loads(args[0])
         self.assertEqual(content["display_name"], "uv-3.12")
+
 
 if __name__ == "__main__":
     unittest.main()
