@@ -3,4 +3,7 @@ ruff = "0.14.0"
 uv = "0.8.17"
 
 [tasks]
-test = "python3 -m unittest discover tests"
+test = "uv run python -m unittest discover tests"
+lint = "ruff check ."
+fmt = "ruff format --check ."
+ci = { depends = ["lint", "fmt", "test"] }
