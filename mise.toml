@@ -1,6 +1,6 @@
 [tools]
 ruff = "0.14.0"
-uv = "0.8.17"
+uv = "0.10.6"
 
 [tasks]
 test = "uv run python -m unittest discover tests"
