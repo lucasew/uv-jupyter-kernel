@@ -10,6 +10,24 @@ import sys
 from typing import Dict, Any
 
 
+def report_error(message: str, exc: Exception = None) -> None:
+    """
+    Centralized error reporting function.
+
+    Provides a single point for handling and logging errors across the
+    script. This allows for easier future integration with external
+    error tracking systems (like Sentry) or advanced logging.
+
+    Args:
+        message: A descriptive message about the error.
+        exc: Optional exception object that caused the error.
+    """
+    error_msg = f"Error: {message}"
+    if exc:
+        error_msg += f" - Exception: {str(exc)}"
+    print(error_msg, file=sys.stderr)
+
+
 def validate_version(version: str) -> str:
     """
     Validates the version string to prevent path traversal attacks.
@@ -45,7 +63,7 @@ def get_uv_path() -> str:
     """
     uv = shutil.which("uv")
     if uv is None:
-        print("Error: 'uv' not found in PATH.", file=sys.stderr)
+        report_error("'uv' not found in PATH.")
         sys.exit(1)
     return uv
 
@@ -157,14 +175,18 @@ def main() -> None:
         help=f"Python versions to configure (default: {' '.join(DEFAULT_VERSIONS)})",
     )
 
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
 
-    uv_path = get_uv_path()
-    kernel_base = get_kernel_dir()
+        uv_path = get_uv_path()
+        kernel_base = get_kernel_dir()
 
-    for version in args.versions:
-        kernel_file = install_kernel(uv_path, version, kernel_base)
-        print(f"Kernel configured for Python {version} at: {kernel_file}")
+        for version in args.versions:
+            kernel_file = install_kernel(uv_path, version, kernel_base)
+            print(f"Kernel configured for Python {version} at: {kernel_file}")
+    except Exception as e:
+        report_error("An unexpected error occurred during kernel setup.", e)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
