@@ -75,7 +75,7 @@ def create_kernel_config(uv_path: str, version: str) -> Dict[str, Any]:
     - Adding the 'uv' directory to PATH.
     - Using 'uv run' to execute the kernel in an isolated environment.
     - Specifying '--no-project' to avoid looking for a project file.
-    - Setting up debug support.
+    - Setting up interactive execution capabilities.
 
     Args:
         uv_path: The path to the 'uv' executable.

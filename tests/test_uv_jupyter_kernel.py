@@ -29,9 +29,9 @@ class TestUvJupyterKernel(unittest.TestCase):
         expected spec, placing 'uv' in the environment PATH and explicitly
         running the ipykernel via 'uv run'.
         """
-        config = uv_jupyter_kernel.create_kernel_config("/usr/bin/uv", "3.12")
+        config = uv_jupyter_kernel.create_kernel_config("mock_bin/uv", "3.12")
         self.assertEqual(config["display_name"], "uv-3.12")
-        self.assertIn("/usr/bin/uv", config["argv"])
+        self.assertIn("mock_bin/uv", config["argv"])
         self.assertIn("3.12", config["argv"])
         self.assertEqual(config["language"], "python")
 
@@ -92,8 +92,8 @@ class TestUvJupyterKernel(unittest.TestCase):
         (parents=True, exist_ok=True) and that the kernel config is correctly
         serialized and written to the kernel.json file within that directory.
         """
-        kernel_base = Path("/tmp/kernels")
-        uv_path = "/usr/bin/uv"
+        kernel_base = Path("mock_dir/kernels")
+        uv_path = "mock_bin/uv"
         version = "3.12"
 
         result = uv_jupyter_kernel.install_kernel(uv_path, version, kernel_base)
