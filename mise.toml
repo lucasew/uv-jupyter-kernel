@@ -1,5 +1,5 @@
 [tools]
-ruff = "0.14.0"
+ruff = "0.17.3"
 uv = "0.8.17"
 
 [tasks]
